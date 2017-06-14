@@ -15,7 +15,9 @@
         vm.reverse = pagingParams.ascending;
         vm.transition = transition;
         vm.itemsPerPage = paginationConstants.itemsPerPage;
+        vm.isVisible = isVisible;
         vm.toggleVisible = toggleVisible;
+        vm.pwdVisible = {};
 
         loadAll();
 
@@ -50,9 +52,13 @@
             vm.page = page;
             vm.transition();
         }
+        
+        function isVisible(id) {
+            return Boolean(vm.pwdVisible[id]);
+        }
 
         function toggleVisible(id) {
-            //TODO show password and change eye icon
+    	    vm.pwdVisible[id] = !vm.pwdVisible[id];
         }
 
         function transition() {

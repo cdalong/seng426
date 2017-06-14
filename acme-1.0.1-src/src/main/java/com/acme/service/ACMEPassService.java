@@ -89,7 +89,7 @@ public class ACMEPassService {
 	public void delete(Long id) {
 		log.debug("Request to delete ACMEPass : {}", id);
 
-		if (acmePassRepository.findOne(id).getUser().equals(SecurityUtils.getCurrentUser())) {
+		if (acmePassRepository.findOne(id).getUser().equals(userService.getCurrentUser())) {
             acmePassRepository.delete(id);
         }
 	}

@@ -61,16 +61,16 @@
             if (chars.length == 0)
             	return;
             
+            var rndChars = chars;
             for (var i = 0; i < vm.genOptions.length; i++) {
                 var position = Math.floor(Math.random() * chars.length);
 
-                if (vm.genOptions.repetition) {
-                    if (vm.password.indexOf(chars[position]) === -1) {
-                        vm.password += chars[position];
-                    }
-                } else {
-                    vm.password += chars[position];
-                }
+                vm.password += chars[position];
+                
+                if (vm.genOptions.repetition)
+                	chars = chars.substr(0, position) + chars.substr(position + 1)
+            	if (chars === "")
+            		chars = rndChars;
             }
         }
 

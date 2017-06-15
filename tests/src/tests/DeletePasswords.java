@@ -62,7 +62,7 @@ public class DeletePasswords {
 		String idAfter = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 
 		assertNotEquals(idBefore, idAfter);
-		assert (message.contains(idBefore));
+		assertTrue(message.contains(idBefore));
 	}
 
 }

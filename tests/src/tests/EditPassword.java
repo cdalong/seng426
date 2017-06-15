@@ -1,108 +1,78 @@
 package tests;
 
-import java.util.List;
+import static org.junit.Assert.*;
+
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import util.ServerConfig;
 import util.WebDriverFactory;
 
 public class EditPassword {
 
     private WebDriver driver;
+	private String baseUrl = "http://localhost:8080";
 
     @Before
-    public void setup() {
-        this.driver = WebDriverFactory.Create();
-        this.driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
-        this.driver.get("http://localhost:8080");
+    public void setup() throws Exception {
+		if (System.getProperty("url") != null)
+			baseUrl = System.getProperty("url");
+		
+		ServerConfig.Setup(baseUrl, 5);
 
-        // Setup the test by logging in to the site as a test user and
-        // navigating to the ACMEPass page
-        this.driver.findElement(By.id("login")).click();
-        this.driver.findElement(By.cssSelector("input#username")).sendKeys("paul.robert@acme.com");
-        this.driver.findElement(By.cssSelector("input#password")).sendKeys("shadow");
-        this.driver.findElement(By.cssSelector("button[type=submit]")).click();
-
-        // We have to wait for the login to complete before performing the
-        // nagivation so that the navbar can refresh
-        Wait<WebDriver> wait = new FluentWait<>(this.driver)
-                .withTimeout(10, TimeUnit.SECONDS)
-                .pollingEvery(500, TimeUnit.MILLISECONDS)
-                .ignoring(NoSuchElementException.class);
-
-        WebElement pass = wait.until((driver) -> driver.findElement(By.linkText("ACMEPass")));
-        pass.click();
-
+		driver = WebDriverFactory.Create();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
     }
 
     @Test
     public void testEdit() throws Exception {
-        // first we create a test entry for us to edit
-        this.driver.findElement(By.cssSelector("button[ui-sref='acme-pass.new']")).click();
-        this.driver.findElement(By.cssSelector("input#field_site")).sendKeys("edit_test.site");
-        this.driver.findElement(By.cssSelector("input#field_login")).sendKeys("edit_test");
-        this.driver.findElement(By.cssSelector("input#field_password")).sendKeys("edit_testPass");
-        this.driver.findElement(By.cssSelector("button[type=submit]")).click();
+		WebDriverWait wait = new WebDriverWait(driver, 5);
 
-        // Sleep to give the page time to populate
-        Thread.sleep(1000);
+		driver.get(baseUrl + "/#/");
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("test@acme.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("test");
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
 
-        // Now we search for our entry in the table of results
-        boolean found = false;
-        for (WebElement row : this.driver.findElements(By.cssSelector("tr"))) {
-            List<WebElement> children = row.findElements(By.cssSelector("td"));
-            if (children.size() < 3) {
-                continue;
-            }
-            WebElement id = children.get(0);
-            WebElement site = children.get(1);
-            WebElement login = children.get(2);
-            if (site.getText().equals("edit_test.site") && login.getText().equals("edit_test")) {
-                // once our entry is found we click the edit button and change
-                // the login to 'edit_foo'
-                String iid = id.getText();
-                this.driver.findElement(By.cssSelector("button[href=\'#/acme-pass/" + iid + "/edit\']")).click();
-                WebElement edit_login = this.driver.findElement(By.cssSelector("input#field_login"));
-                edit_login.clear();
-                edit_login.sendKeys("edit_foo");
-                this.driver.findElement(By.cssSelector("button[type=submit]")).click();
-                found = true;
-                break;
-            }
-        }
-        if (!found) {
-            Assert.fail("Failed to find newly created password");
-        }
-        // Sleep to give the page time to populate
-        Thread.sleep(1000);
-        // Now we try and find our updated entry in the table
-        for (WebElement row : this.driver.findElements(By.cssSelector("tr"))) {
-            List<WebElement> children = row.findElements(By.cssSelector("td"));
-            if (children.size() < 3) {
-                continue;
-            }
-            WebElement id = children.get(0);
-            WebElement site = children.get(1);
-            WebElement login = children.get(2);
-            if (site.getText().equals("edit_test.site") && login.getText().equals("edit_foo")) {
-                // We've found it so test passed, now delete it again
-                String iid = id.getText();
-                this.driver.findElement(By.cssSelector("button[href=\'#/acme-pass/" + iid + "/delete\']")).click();
-                this.driver.findElement(By.cssSelector("button[type=submit]")).click();
-                return;
-            }
-        }
-        Assert.fail("Failed to find edited entry");
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
+		driver.findElement(By.linkText("ACMEPass")).click();
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]")));
+		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
+		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[1]")).click();
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type=submit]")));
+		driver.findElement(By.id("field_site")).clear();
+		driver.findElement(By.id("field_login")).clear();
+		driver.findElement(By.id("field_password")).clear();
+		driver.findElement(By.id("field_site")).sendKeys("edit_foo");
+		driver.findElement(By.id("field_login")).sendKeys("edit_foo2");
+		driver.findElement(By.id("field_password")).sendKeys("edit_foo3");
+		driver.findElement(By.cssSelector("button[type=submit]")).click();
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//pre[1]")));
+		String message = driver.findElement(By.xpath("//pre[1]")).getText();
+		String idAfter = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
+		String siteAfter = driver.findElement(By.xpath("//tr[1]/td[2]")).getText();
+		String loginAfter = driver.findElement(By.xpath("//tr[1]/td[3]")).getText();
+		String passwordAfter = driver.findElement(By.xpath("//tr[1]/td[4]/div/input")).getAttribute("value");
+        
+		assertEquals(idBefore, idAfter);
+		assertEquals(siteAfter, "edit_foo");
+		assertEquals(loginAfter, "edit_foo2");
+		assertEquals(passwordAfter, "edit_foo3");
+		assertTrue(message.contains(idBefore));
     }
 
     @After

@@ -53,9 +53,47 @@ public class ToggleVisibility extends TestCase{
 		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 		driver.findElement(By.linkText("ACMEPass")).click();
 		
+		subTestListView();
+		subTestCreateView();
+	}
+	
+	public void subTestListView() throws Exception {
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+		
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[4]/div")));
 		WebElement span = driver.findElement(By.xpath("//tr[1]/td[4]/div/span"));
 		WebElement input = driver.findElement(By.xpath("//tr[1]/td[4]/div/input"));;
+		String type1 = input.getAttribute("type");
+		String class1 = span.getAttribute("class");
+		span.click();
+		
+		wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(input, "type", type1)));
+		String type2 = input.getAttribute("type");
+		String class2 = span.getAttribute("class");
+		span.click();
+		
+		wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(input, "type", type2)));
+		String type3 = input.getAttribute("type");
+		String class3 = span.getAttribute("class");
+		
+		assertNotEquals(type1, type2);
+		assertNotEquals(type2, type3);
+		assertEquals(type1, type3);
+		assertNotEquals(class1, class2);
+		assertNotEquals(class2, class3);
+		assertEquals(class1, class3);
+	}
+	
+	public void subTestCreateView() throws Exception {
+		WebDriverWait wait = new WebDriverWait(driver, 5);
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[href='#/acme-pass/new']")));
+		driver.findElement(By.cssSelector("button[href='#/acme-pass/new']")).click();
+		
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[id='field_password']")));
+		WebElement input = driver.findElement(By.cssSelector("input[id='field_password']"));
+		WebElement span = input.findElement(By.xpath("../span"));
+
 		String type1 = input.getAttribute("type");
 		String class1 = span.getAttribute("class");
 		span.click();

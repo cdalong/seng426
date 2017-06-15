@@ -16,6 +16,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
+import util.WebDriverFactory;
+
 public class CreateACMEPass {
     private WebDriver driver;
     private String baseUrl = "http://localhost:8080";
@@ -24,7 +26,7 @@ public class CreateACMEPass {
     public void setUp(){
             System.setProperty("webdriver.gecko.driver", "src/geckodriver");
 
-            driver = new FirefoxDriver();
+            driver = WebDriverFactory.Create();
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);        
             driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
             driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);

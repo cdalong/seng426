@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import util.ServerConfig;
+import util.WebDriverFactory;
 import junit.framework.TestCase;
 
 public class ToggleVisibility extends TestCase{
@@ -36,7 +37,7 @@ public class ToggleVisibility extends TestCase{
 	public void setUp() throws Exception {
 		ServerConfig.Setup(baseUrl, 5);
 
-		driver = new FirefoxDriver();
+		driver = WebDriverFactory.Create();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);

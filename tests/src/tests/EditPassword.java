@@ -15,13 +15,15 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
+import util.WebDriverFactory;
+
 public class EditPassword {
 
     private WebDriver driver;
 
     @Before
     public void setup() {
-        this.driver = new FirefoxDriver();
+        this.driver = WebDriverFactory.Create();
         this.driver.manage().timeouts().implicitlyWait(1000, TimeUnit.MILLISECONDS);
         this.driver.get("http://localhost:8080");
 

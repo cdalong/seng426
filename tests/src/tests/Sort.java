@@ -19,6 +19,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import util.WebDriverFactory;
 import junit.framework.TestCase;
 
 public class Sort extends TestCase{
@@ -30,7 +31,7 @@ public class Sort extends TestCase{
 		
 		System.setProperty("webdriver.chrome.driver", "C:/Users/Crims/Documents/chromedriver_win32/chromedriver.exe");
 
-		driver = new ChromeDriver();
+		driver = WebDriverFactory.Create();
 		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 		
 	}

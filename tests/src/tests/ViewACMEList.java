@@ -20,6 +20,7 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import util.ServerConfig;
+import util.WebDriverFactory;
 
 public class ViewACMEList {
 	
@@ -40,7 +41,7 @@ public class ViewACMEList {
     public void setUp() throws Exception {
 		ServerConfig.Setup(baseUrl, 15);
 
-		driver = new FirefoxDriver();
+		driver = WebDriverFactory.Create();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);

@@ -158,6 +158,9 @@ public class ToggleVisibility extends TestCase{
 	
 	
 	
+	
+	
+	
 	@After
 	public void tearDown() throws Exception {
 		this.driver.quit();

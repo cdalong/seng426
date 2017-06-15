@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +19,11 @@ import com.google.gson.JsonParser;
 
 public class ServerConfig {
 	public static void Setup(String baseUrl) throws Exception
+	{
+		Setup(baseUrl, 25);
+	}
+	
+	public static void Setup(String baseUrl, int numEntries) throws Exception
 	{
 		URL url = new URL(baseUrl);
 		
@@ -30,12 +36,12 @@ public class ServerConfig {
 		System.out.println("Confirming account contents...");
 		JsonArray entries = GetEntries(url, token, sessionId);
 		System.out.println("Existing test entries: " + entries.size());
-		if (entries.size() != 25)
-			System.out.println("Updating account to 25 entries...");
+		if (entries.size() != numEntries)
+			System.out.println(String.format("Updating account to %d entries...", numEntries));
 			
-		for (int i = entries.size(); i < 25; ++i)
+		for (int i = entries.size(); i < numEntries; ++i)
 			AddTestEntry(url, token, sessionId);
-		for (int i = entries.size(); i > 25; --i) {
+		for (int i = entries.size(); i > numEntries; --i) {
 			int id = entries.get(i - 1).getAsJsonObject().get("id").getAsInt();
 			DeleteEntry(url, token, sessionId, id);
 		}
@@ -50,9 +56,10 @@ public class ServerConfig {
 		
 		List<String> cookies = connection.getHeaderFields().get("Set-Cookie");
 		String xsrfToken = "";
-		for (String cookie : cookies)
-			if (cookie.startsWith("XSRF-TOKEN"))
-				xsrfToken = cookie.split(";")[0].split("=", 2)[1];
+		if (cookies != null)
+			for (String cookie : cookies)
+				if (cookie.startsWith("XSRF-TOKEN"))
+					xsrfToken = cookie.split(";")[0].split("=", 2)[1];
 		
 		return xsrfToken;
 	}
@@ -122,9 +129,10 @@ public class ServerConfig {
 			
 			List<String> cookies = connection.getHeaderFields().get("Set-Cookie");
 			String sessionId = "";
-			for (String cookie : cookies)
-				if (cookie.startsWith("JSESSIONID"))
-					sessionId = cookie.split(";")[0].split("=", 2)[1];
+			if (cookies != null)
+				for (String cookie : cookies)
+					if (cookie.startsWith("JSESSIONID"))
+						sessionId = cookie.split(";")[0].split("=", 2)[1];
 			
 			return sessionId;
 		} else {
@@ -138,8 +146,6 @@ public class ServerConfig {
 	{
 		URL url = new URL(baseUrl, "api/acme-passes?page=0&size=999");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setDoOutput(true);
-		connection.setDoInput(true);
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("Cookie", "XSRF-TOKEN="+token + "; JSESSIONID=" + sessionId);
 		connection.setRequestProperty("X-XSRF-TOKEN", token);
@@ -167,10 +173,12 @@ public class ServerConfig {
 		connection.setRequestProperty("Cookie", "XSRF-TOKEN="+token + "; JSESSIONID=" + sessionId);
 		connection.setRequestProperty("X-XSRF-TOKEN", token);
 		
+		int num = new Random().nextInt(1000);
+		String key = String.format("test_%03d", num);
 		JsonObject obj = new JsonObject();
-		obj.addProperty("login", "test");
-		obj.addProperty("password", "test");
-		obj.addProperty("site", "test");
+		obj.addProperty("login", key);
+		obj.addProperty("password", key);
+		obj.addProperty("site", key);
 		
 		OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
 		writer.write(obj.toString());
@@ -190,8 +198,6 @@ public class ServerConfig {
 	{
 		URL url = new URL(baseUrl, "api/acme-passes/" + id);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		connection.setDoOutput(true);
-		connection.setDoInput(true);
 		connection.setRequestMethod("DELETE");
 		connection.setRequestProperty("Cookie", "XSRF-TOKEN="+token + "; JSESSIONID=" + sessionId);
 		connection.setRequestProperty("X-XSRF-TOKEN", token);
@@ -200,9 +206,8 @@ public class ServerConfig {
 		if (code == 200 || code == 204) {
 			//
 		} else {
-			String response = GetResponseError(connection);
 			System.out.println("Connection failure...");
-			System.out.println(response);
+			System.out.println("code: " + code);
 		}
 	}
 	

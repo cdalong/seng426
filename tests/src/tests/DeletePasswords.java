@@ -32,7 +32,7 @@ public class DeletePasswords {
 
 	@Before
 	public void setUp() throws Exception {
-		ServerConfig.Setup(baseUrl);
+		ServerConfig.Setup(baseUrl, 5);
 
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
@@ -60,6 +60,7 @@ public class DeletePasswords {
 		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 		driver.findElement(By.linkText("ACMEPass")).click();
 
+		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[1]")));
 		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[2]")).click();
 		driver.findElement(By.cssSelector("button.btn.btn-danger")).click();

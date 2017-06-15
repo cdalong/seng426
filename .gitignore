@@ -1,8 +1,10 @@
 /*/node_modules
 
 /.metadata/
+/.recommenders/
 /*/.project
 /*/.classpath
 /*/target/
 /*/.settings/
 /*/bin/
+/acme-1.0.1-src/src/main/resources/config/application-dev.yml

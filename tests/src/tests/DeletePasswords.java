@@ -23,7 +23,6 @@ public class DeletePasswords {
 
 	private WebDriver driver;
 	private String baseUrl = "http://localhost:8080";
-	private StringBuffer verificationErrors = new StringBuffer();
 
 	@Before
 	public void setUp() throws Exception {
@@ -40,16 +39,10 @@ public class DeletePasswords {
 	@After
 	public void tearDown() throws Exception {
 		driver.quit();
-
-		String verificationErrorString = verificationErrors.toString();
-		if (!"".equals(verificationErrorString)) {
-			fail(verificationErrorString);
-		}
 	}
 
 	@Test
 	public void test() {
-
 		WebDriverWait wait = new WebDriverWait(driver, 5);
 
 		driver.get(baseUrl + "/#/");
@@ -60,19 +53,16 @@ public class DeletePasswords {
 		driver.findElement(By.id("password")).sendKeys("test");
 		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
 
-		wait.until(ExpectedConditions.elementToBeClickable(By
-				.id("account-menu")));
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 		driver.findElement(By.linkText("ACMEPass")).click();
 
-		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]"))
-				.getText();
+		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[2]")).click();
 		driver.findElement(By.cssSelector("button.btn.btn-danger")).click();
 
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//pre[1]")));
 		String message = driver.findElement(By.xpath("//pre[1]")).getText();
-		String idAfter = driver.findElement(By.xpath("//tr[1]/td[1]"))
-				.getText();
+		String idAfter = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 
 		assertNotEquals(idBefore, idAfter);
 		assert (message.contains(idBefore));

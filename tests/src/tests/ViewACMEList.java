@@ -7,16 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import util.ServerConfig;
@@ -24,21 +19,14 @@ import util.WebDriverFactory;
 
 public class ViewACMEList {
 	
-	private static String baseUrl = "http://localhost:8080";
-
 	private WebDriver driver;
-	
-	@BeforeClass
-	public static void setUpOnce() throws Exception {
-		if (System.getProperty("webdriver.gecko.driver") == null)
-			System.setProperty("webdriver.gecko.driver", "bin/geckodriver");
-
-		if (System.getProperty("url") != null)
-			baseUrl = System.getProperty("url");
-	}
+	private String baseUrl = "http://localhost:8080";
 	
     @Before
     public void setUp() throws Exception {
+		if (System.getProperty("url") != null)
+			baseUrl = System.getProperty("url");
+    	
 		ServerConfig.Setup(baseUrl, 15);
 
 		driver = WebDriverFactory.Create();

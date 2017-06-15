@@ -4,10 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -18,21 +16,14 @@ import util.WebDriverFactory;
 
 public class DeletePasswords {
 	
-	private static String baseUrl = "http://localhost:8080";
-
 	private WebDriver driver;
-	
-	@BeforeClass
-	public static void setUpOnce() throws Exception {
-		if (System.getProperty("webdriver.gecko.driver") == null)
-			System.setProperty("webdriver.gecko.driver", "bin/geckodriver");
-
-		if (System.getProperty("url") != null)
-			baseUrl = System.getProperty("url");
-	}
+	private String baseUrl = "http://localhost:8080";
 
 	@Before
 	public void setUp() throws Exception {
+		if (System.getProperty("url") != null)
+			baseUrl = System.getProperty("url");
+		
 		ServerConfig.Setup(baseUrl, 5);
 
 		driver = WebDriverFactory.Create();

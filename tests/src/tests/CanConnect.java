@@ -10,18 +10,14 @@ import junit.framework.TestCase;
 
 public class CanConnect extends TestCase{
 	
-	private static String baseUrl = "http://localhost:8080";
-
 	private WebDriver driver;
-	
-	@BeforeClass
-	public static void setUpOnce() throws Exception {
-		if (System.getProperty("url") != null)
-			baseUrl = System.getProperty("url");
-	}
-	
+	private String baseUrl = "http://localhost:8080";
+
 	@Before
 	public void setUp() throws Exception {
+		if (System.getProperty("url") != null)
+			baseUrl = System.getProperty("url");
+		
 		driver = WebDriverFactory.Create();
 		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 

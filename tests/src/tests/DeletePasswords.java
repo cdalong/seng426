@@ -4,31 +4,35 @@ import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.*;
-import org.openqa.selenium.htmlunit.*;
 import org.openqa.selenium.firefox.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.sql.DriverManager;
 import java.util.concurrent.TimeUnit;
 
 import util.ServerConfig;
 
 public class DeletePasswords {
+	
+	private static String baseUrl = "http://localhost:8080";
 
 	private WebDriver driver;
-	private String baseUrl = "http://localhost:8080";
+	
+	@BeforeClass
+	public static void setUpOnce() throws Exception {
+		if (System.getProperty("webdriver.gecko.driver") == null)
+			System.setProperty("webdriver.gecko.driver", "bin/geckodriver");
+
+		if (System.getProperty("url") != null)
+			baseUrl = System.getProperty("url");
+	}
 
 	@Before
 	public void setUp() throws Exception {
 		ServerConfig.Setup(baseUrl);
-
-		System.setProperty("webdriver.gecko.driver", "/home/limja/bin/geckodriver");
 
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);

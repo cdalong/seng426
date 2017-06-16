@@ -4,8 +4,9 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,15 +15,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import util.ServerConfig;
 import util.WebDriverFactory;
-import junit.framework.TestCase;
 
-public class ToggleVisibility extends TestCase{
+public class ToggleVisibility {
 	
-	private WebDriver driver;
-	private String baseUrl = "http://localhost:8080";
+	private static WebDriver driver;
+	private static WebDriverWait wait;
+	private static String baseUrl = "http://localhost:8080";
 	
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void setUpOnce() throws Exception {
 		if (System.getProperty("url") != null)
 			baseUrl = System.getProperty("url");
 		
@@ -32,15 +33,7 @@ public class ToggleVisibility extends TestCase{
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
-	}
-	
-	@After
-	public void tearDown() throws Exception {
-		driver.quit();
-	}
-	
-	public void test() throws Exception {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
+		wait = new WebDriverWait(driver, 5);
 		
 		driver.get(baseUrl + "/#/");
 		driver.findElement(By.id("login")).click();
@@ -49,16 +42,18 @@ public class ToggleVisibility extends TestCase{
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("test");
 		driver.findElement(By.id("login")).click();
-		
 		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
-		driver.findElement(By.linkText("ACMEPass")).click();
-		
-		subTestListView();
-		subTestCreateView();
 	}
 	
-	public void subTestListView() throws Exception {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
+	@AfterClass
+	public static void tearDownOnce() throws Exception {
+		driver.quit();
+	}
+	
+	@Test
+	public void TestListView() throws Exception {
+		
+		driver.get(baseUrl + "/#/acme-pass");
 		
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[4]/div")));
 		WebElement span = driver.findElement(By.xpath("//tr[1]/td[4]/div/span"));
@@ -84,8 +79,10 @@ public class ToggleVisibility extends TestCase{
 		assertEquals(class1, class3);
 	}
 	
-	public void subTestCreateView() throws Exception {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
+	@Test
+	public void TestCreateView() throws Exception {
+
+		driver.get(baseUrl + "/#/acme-pass");
 		
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[href='#/acme-pass/new']")));
 		driver.findElement(By.cssSelector("button[href='#/acme-pass/new']")).click();

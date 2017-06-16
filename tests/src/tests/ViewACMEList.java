@@ -20,6 +20,7 @@ import util.WebDriverFactory;
 public class ViewACMEList {
 	
 	private WebDriver driver;
+	private WebDriverWait wait;
 	private String baseUrl = "http://localhost:8080";
 	
     @Before
@@ -33,6 +34,16 @@ public class ViewACMEList {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 5);
+
+		driver.get(baseUrl + "/#/");
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("test@acme.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("test");
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
     }
 
     @After
@@ -42,20 +53,10 @@ public class ViewACMEList {
     
     @Test
     public void testViewACME() {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-		
-		driver.get(baseUrl + "/#/");
-		driver.findElement(By.id("login")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("test@acme.com");
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("test");
-		driver.findElement(By.id("login")).click();
-		
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
-		driver.findElement(By.linkText("ACMEPass")).click();		
-		
+    	
+		driver.get(baseUrl + "/#/acme-pass");
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));
+		
 		By elementLocator = By.xpath("//tr[@ng-repeat='acmePass in vm.acmePasses track by acmePass.id']");
 		By navLocator = By.xpath("/html/body/div[3]/div/div/div[3]/jhi-item-count/div");
 		

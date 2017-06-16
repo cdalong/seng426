@@ -18,6 +18,7 @@ import util.WebDriverFactory;
 public class GeneratePassword {
 	
 	private WebDriver driver;
+	private WebDriverWait wait;
 	private String baseUrl = "http://localhost:8080";
 
 	@Before
@@ -31,6 +32,16 @@ public class GeneratePassword {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 5);
+		
+		driver.get(baseUrl + "/#/");
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("test@acme.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("test");
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 	}
 
 	@After
@@ -40,23 +51,11 @@ public class GeneratePassword {
 
 	@Test
 	public void test() {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-
-		// Login.
-		driver.get(baseUrl + "/#/");
-		driver.findElement(By.id("login")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("test@acme.com");
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("test");
-		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
-
-		// Navigate to ACMEPass page.
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
-		driver.findElement(By.linkText("ACMEPass")).click();
+		
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[href='#/acme-pass/new']")));
 		
 		// Open the generate password dialogue box.
-		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[href='#/acme-pass/new']")));
 	    driver.findElement(By.cssSelector("button[href='#/acme-pass/new']")).click();
 	    wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[ng-click='vm.openPwdGenModal()']")));
 	    driver.findElement(By.cssSelector("button[ng-click='vm.openPwdGenModal()']")).click();

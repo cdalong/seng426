@@ -41,7 +41,7 @@ public class ToggleVisibility {
 		driver.findElement(By.id("username")).sendKeys("test@acme.com");
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("test");
-		driver.findElement(By.id("login")).click();
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
 		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 	}
 	
@@ -54,8 +54,8 @@ public class ToggleVisibility {
 	public void TestListView() throws Exception {
 		
 		driver.get(baseUrl + "/#/acme-pass");
-		
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[4]/div")));
+		
 		WebElement span = driver.findElement(By.xpath("//tr[1]/td[4]/div/span"));
 		WebElement input = driver.findElement(By.xpath("//tr[1]/td[4]/div/input"));;
 		String type1 = input.getAttribute("type");

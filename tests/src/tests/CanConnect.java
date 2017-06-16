@@ -1,14 +1,15 @@
 package tests;
 
+import static org.junit.Assert.*;
+
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 
 import util.WebDriverFactory;
-import junit.framework.TestCase;
 
-public class CanConnect extends TestCase{
+public class CanConnect {
 	
 	private WebDriver driver;
 	private String baseUrl = "http://localhost:8080";
@@ -20,7 +21,6 @@ public class CanConnect extends TestCase{
 		
 		driver = WebDriverFactory.Create();
 		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
-
 	}
 	
 	@After
@@ -28,6 +28,7 @@ public class CanConnect extends TestCase{
 		driver.quit();
 	}
 	
+	@Test
 	public void testConnect() throws Exception {
 		
 		driver.get(baseUrl);

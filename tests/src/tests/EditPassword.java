@@ -18,6 +18,7 @@ import util.WebDriverFactory;
 public class EditPassword {
 
     private WebDriver driver;
+    private WebDriverWait wait;
 	private String baseUrl = "http://localhost:8080";
 
     @Before
@@ -31,12 +32,8 @@ public class EditPassword {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
-    }
-
-    @Test
-    public void testEdit() throws Exception {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-
+		wait = new WebDriverWait(driver, 5);
+		
 		driver.get(baseUrl + "/#/");
 		driver.findElement(By.id("login")).click();
 		driver.findElement(By.id("username")).clear();
@@ -44,11 +41,15 @@ public class EditPassword {
 		driver.findElement(By.id("password")).clear();
 		driver.findElement(By.id("password")).sendKeys("test");
 		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
-
 		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
-		driver.findElement(By.linkText("ACMEPass")).click();
+    }
+
+    @Test
+    public void testEdit() throws Exception {
 		
+    	driver.get(baseUrl + "/#/acme-pass");
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]")));
+		
 		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[1]")).click();
 		

@@ -19,6 +19,7 @@ import util.WebDriverFactory;
 public class Pagination {
 
 	private WebDriver driver;
+	private WebDriverWait wait;
 	private String baseUrl = "http://localhost:8080";
 	
 	@Before
@@ -32,6 +33,16 @@ public class Pagination {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 5);
+		
+		driver.get(baseUrl + "/#/");
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("test@acme.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("test");
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 	}
 	
 	@After
@@ -41,18 +52,8 @@ public class Pagination {
 	
 	@Test
 	public void test() throws Exception {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-		
-		driver.get(baseUrl + "/#/");
-		driver.findElement(By.id("login")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("test@acme.com");
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("test");
-		driver.findElement(By.id("login")).click();
-		
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
-		driver.findElement(By.linkText("ACMEPass")).click();
+
+		driver.get(baseUrl + "/#/acme-pass");
 
 		By navLocator = By.xpath("/html/body/div[3]/div/div/div[3]/jhi-item-count/div");
 		wait.until(ExpectedConditions.elementToBeClickable(navLocator));

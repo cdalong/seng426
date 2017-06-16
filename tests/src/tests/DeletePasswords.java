@@ -17,6 +17,7 @@ import util.WebDriverFactory;
 public class DeletePasswords {
 	
 	private WebDriver driver;
+	private WebDriverWait wait;
 	private String baseUrl = "http://localhost:8080";
 
 	@Before
@@ -30,6 +31,16 @@ public class DeletePasswords {
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 5);
+		
+		driver.get(baseUrl + "/#/");
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("test@acme.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("test");
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 	}
 
 	@After
@@ -39,20 +50,10 @@ public class DeletePasswords {
 
 	@Test
 	public void test() {
-		WebDriverWait wait = new WebDriverWait(driver, 5);
-
-		driver.get(baseUrl + "/#/");
-		driver.findElement(By.id("login")).click();
-		driver.findElement(By.id("username")).clear();
-		driver.findElement(By.id("username")).sendKeys("test@acme.com");
-		driver.findElement(By.id("password")).clear();
-		driver.findElement(By.id("password")).sendKeys("test");
-		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
-
-		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
-		driver.findElement(By.linkText("ACMEPass")).click();
-
+		
+		driver.get(baseUrl + "/#/acme-pass");
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[1]")));
+		
 		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[2]")).click();
 		driver.findElement(By.cssSelector("button.btn.btn-danger")).click();

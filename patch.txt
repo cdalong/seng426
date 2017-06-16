@@ -1,7 +1,41 @@
+From c85ed1f70f2cb5d2bd11dc88f88a165dfceebba8 Mon Sep 17 00:00:00 2001
+From: Jason Lim <jasonlim663@gmail.com>
+Date: Tue, 13 Jun 2017 20:55:54 -0700
+Subject: [PATCH 1/5] - Fixed bug causing password generator to produce
+ incorrect passwords when all generator options are deselected. - Fixed bug
+ causing password generator to randomly insert the word "undefined" between
+ generated password characters.
+
+Work Time: 20m
+---
+ .../webapp/app/entities/acme-pass/acme-pass-pwd-gen.controller.js    | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/acme-1.0.1-src/src/main/webapp/app/entities/acme-pass/acme-pass-pwd-gen.controller.js b/acme-1.0.1-src/src/main/webapp/app/entities/acme-pass/acme-pass-pwd-gen.controller.js
+index eb37398..c799d8a 100644
+--- a/acme-1.0.1-src/src/main/webapp/app/entities/acme-pass/acme-pass-pwd-gen.controller.js
++++ b/acme-1.0.1-src/src/main/webapp/app/entities/acme-pass/acme-pass-pwd-gen.controller.js
+@@ -58,8 +58,11 @@
+                 chars += vm.chars.special;
+             }
+ 
++            if (chars.length == 0)
++            	return;
++            
+             for (var i = 0; i < vm.genOptions.length; i++) {
+-                var position = Math.round(Math.random() * chars.length);
++                var position = Math.floor(Math.random() * chars.length);
+ 
+                 if (vm.genOptions.repetition) {
+                     if (vm.password.indexOf(chars[position]) === -1) {
+-- 
+1.8.3.msysgit.0
+
+
 From 332e9c54b4f65f46cd039f48303c5e98661d6544 Mon Sep 17 00:00:00 2001
 From: Jason Lim <jasonlim663@gmail.com>
 Date: Tue, 13 Jun 2017 21:24:30 -0700
-Subject: [PATCH 1/4] - Fixed bug where password generator would produced
+Subject: [PATCH 2/5] - Fixed bug where password generator would produce
  passwords shorter than the requested length when the Prevent Repeated
  Characters option is enabled.
 
@@ -45,7 +79,7 @@ index c799d8a..8038081 100644
 From 103ce57b729a53e39c3b3b70ef730b1c334ca403 Mon Sep 17 00:00:00 2001
 From: Jason Lim <jasonlim663@gmail.com>
 Date: Tue, 13 Jun 2017 22:01:21 -0700
-Subject: [PATCH 2/4] - Fixed bug preventing users from deleting ACMEPass
+Subject: [PATCH 3/5] - Fixed bug preventing users from deleting ACMEPass
  entries.
 
 Work Time: 20m
@@ -73,7 +107,7 @@ index df61f7a..f905a70 100644
 From 2d55329eba8a82556e9b3a0385865a389a03b227 Mon Sep 17 00:00:00 2001
 From: Jason Lim <jasonlim663@gmail.com>
 Date: Tue, 13 Jun 2017 23:31:36 -0700
-Subject: [PATCH 3/4] - Implemented controls for toggling password visibility.
+Subject: [PATCH 4/5] - Implemented controls for toggling password visibility.
 
 Work Time: 60m
 ---
@@ -149,7 +183,7 @@ index e8aca6e..dd2685c 100644
 From 1be8ff2a399e56d237dfc2e88f3f2340559c1c46 Mon Sep 17 00:00:00 2001
 From: Cameron Long <cdalong@uvic.ca>
 Date: Wed, 14 Jun 2017 21:41:47 -0700
-Subject: [PATCH 4/4] Added id to login button for QoL
+Subject: [PATCH 5/5] Added id to login button for QoL
 
 ---
  acme-1.0.1-src/webapp/app/components/login/login.html | 2 +-

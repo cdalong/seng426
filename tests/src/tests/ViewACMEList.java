@@ -31,7 +31,7 @@ public class ViewACMEList {
 		ServerConfig.Setup(baseUrl, 15);
 
 		driver = WebDriverFactory.Create();
-		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
 		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
 		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
 		wait = new WebDriverWait(driver, 5);

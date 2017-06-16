@@ -87,6 +87,51 @@ public class EditPassword {
         assertTrue(message.contains(idBefore));
     }
 
+    @Test
+    public void testEmptySite() throws Exception {
+        driver.get(baseUrl + "/#/acme-pass");
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]")));
+
+        // Open the edit password dialogue box.
+        driver.findElement(By.xpath("//tr[1]/td[7]/div/button[1]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type=submit]")));
+
+        // Input new password data and confirm the edit.
+        driver.findElement(By.id("field_site")).clear();
+        WebElement submit = driver.findElement(By.cssSelector("button[type=submit]"));
+        assertEquals("true", submit.getAttribute("disabled"));
+    }
+
+    @Test
+    public void testEmptyLogin() throws Exception {
+        driver.get(baseUrl + "/#/acme-pass");
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]")));
+
+        // Open the edit password dialogue box.
+        driver.findElement(By.xpath("//tr[1]/td[7]/div/button[1]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type=submit]")));
+
+        // Input new password data and confirm the edit.
+        driver.findElement(By.id("field_login")).clear();
+        WebElement submit = driver.findElement(By.cssSelector("button[type=submit]"));
+        assertEquals("true", submit.getAttribute("disabled"));
+    }
+
+    @Test
+    public void testEmptyPassword() throws Exception {
+        driver.get(baseUrl + "/#/acme-pass");
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]")));
+
+        // Open the edit password dialogue box.
+        driver.findElement(By.xpath("//tr[1]/td[7]/div/button[1]")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type=submit]")));
+
+        // Input new password data and confirm the edit.
+        driver.findElement(By.id("field_password")).clear();
+        WebElement submit = driver.findElement(By.cssSelector("button[type=submit]"));
+        assertEquals("true", submit.getAttribute("disabled"));
+    }
+
     @After
     public void finish() {
         // this.driver.close();

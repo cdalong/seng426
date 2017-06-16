@@ -59,12 +59,13 @@ public class Pagination {
 		wait.until(ExpectedConditions.elementToBeClickable(navLocator));
 		String navMessage = driver.findElement(navLocator).getText();
 
-		// showing x - y of z items
-		String[] stringArray = navMessage.split(" ");
+		// Get the total number of items, items shown and pages.
+		String[] stringArray = navMessage.split(" "); 		// showing x - y of z items
 		int totalnumberofrecords = Integer.parseInt(stringArray[5]);
 		int recordsperpage = Integer.parseInt(stringArray[3]);
 		int clickcount = (totalnumberofrecords - 1) / recordsperpage;
 		
+		// Step forward through each page and record the page indices.
 		ArrayList<Integer> pageIndicesFwd = new ArrayList<Integer>();
 		pageIndicesFwd.add(Integer.parseInt(stringArray[1]));
 		for (int i = 0; i < clickcount; i++) {	
@@ -76,6 +77,7 @@ public class Pagination {
 			pageIndicesFwd.add(Integer.parseInt(stringArray[1]));
 		}
 		
+		// Step backwards through each page and record the page indices.
 		ArrayList<Integer> pageIndicesBack = new ArrayList<Integer>();
 		pageIndicesBack.add(Integer.parseInt(stringArray[1]));
 		for (int i = 0; i < clickcount; i++) {	

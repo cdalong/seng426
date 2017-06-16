@@ -50,10 +50,12 @@ public class EditPassword {
     	driver.get(baseUrl + "/#/acme-pass");
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]")));
 		
+		// Open the edit password dialogue box.
 		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[1]")).click();
-		
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type=submit]")));
+		
+		// Input new password data and confirm the edit.
 		driver.findElement(By.id("field_site")).clear();
 		driver.findElement(By.id("field_login")).clear();
 		driver.findElement(By.id("field_password")).clear();
@@ -61,8 +63,8 @@ public class EditPassword {
 		driver.findElement(By.id("field_login")).sendKeys("edit_foo2");
 		driver.findElement(By.id("field_password")).sendKeys("edit_foo3");
 		driver.findElement(By.cssSelector("button[type=submit]")).click();
-		
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//pre[1]")));
+		
 		String message = driver.findElement(By.xpath("//pre[1]")).getText();
 		String idAfter = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		String siteAfter = driver.findElement(By.xpath("//tr[1]/td[2]")).getText();

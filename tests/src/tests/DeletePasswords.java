@@ -54,11 +54,13 @@ public class DeletePasswords {
 		driver.get(baseUrl + "/#/acme-pass");
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[1]")));
 		
+		// Open the delete password dialogue box and cofirm the delete.
 		String idBefore = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 		driver.findElement(By.xpath("//tr[1]/td[7]/div/button[2]")).click();
 		driver.findElement(By.cssSelector("button.btn.btn-danger")).click();
-
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//pre[1]")));
+		
+		// Check both the feedback message and the id of the cell where the password was deleted.
 		String message = driver.findElement(By.xpath("//pre[1]")).getText();
 		String idAfter = driver.findElement(By.xpath("//tr[1]/td[1]")).getText();
 

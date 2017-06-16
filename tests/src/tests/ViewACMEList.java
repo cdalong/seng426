@@ -60,10 +60,12 @@ public class ViewACMEList {
 		By elementLocator = By.xpath("//tr[@ng-repeat='acmePass in vm.acmePasses track by acmePass.id']");
 		By navLocator = By.xpath("/html/body/div[3]/div/div/div[3]/jhi-item-count/div");
 		
+		// Get the number of passwords listed as reported by the interface.
 		String navMessage = driver.findElement(navLocator).getText(); // showing x - y of z items
 		String[] parts = navMessage.split(" ");
 		int elementsReported = Integer.parseInt(parts[3]);
 		
+		// Get the actual password elements showing in the interface.
 		List<WebElement> elementsListed = driver.findElements(elementLocator);
 		
 		assertEquals(elementsListed.size(), elementsReported);

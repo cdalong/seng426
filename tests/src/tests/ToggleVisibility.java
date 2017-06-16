@@ -56,18 +56,23 @@ public class ToggleVisibility {
 		driver.get(baseUrl + "/#/acme-pass");
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//tr[1]/td[4]/div")));
 		
+		// Record the starting state of the password display.
 		WebElement span = driver.findElement(By.xpath("//tr[1]/td[4]/div/span"));
 		WebElement input = driver.findElement(By.xpath("//tr[1]/td[4]/div/input"));;
 		String type1 = input.getAttribute("type");
 		String class1 = span.getAttribute("class");
-		span.click();
 		
+		span.click();
 		wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(input, "type", type1)));
+
+		// Record the toggled state of the password display.
 		String type2 = input.getAttribute("type");
 		String class2 = span.getAttribute("class");
-		span.click();
 		
+		span.click();
 		wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(input, "type", type2)));
+
+		// Record the returned state of the password display.
 		String type3 = input.getAttribute("type");
 		String class3 = span.getAttribute("class");
 		
@@ -83,24 +88,30 @@ public class ToggleVisibility {
 	public void TestCreateView() throws Exception {
 
 		driver.get(baseUrl + "/#/acme-pass");
-		
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[href='#/acme-pass/new']")));
-		driver.findElement(By.cssSelector("button[href='#/acme-pass/new']")).click();
 		
+		// Open the new ACMEPass dialogue.
+		driver.findElement(By.cssSelector("button[href='#/acme-pass/new']")).click();
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[id='field_password']")));
+		
 		WebElement input = driver.findElement(By.cssSelector("input[id='field_password']"));
 		WebElement span = input.findElement(By.xpath("../span"));
 
+		// Record the starting state of the password display.
 		String type1 = input.getAttribute("type");
 		String class1 = span.getAttribute("class");
-		span.click();
 		
+		span.click();
 		wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(input, "type", type1)));
+		
+		// Record the toggled state of the password display.
 		String type2 = input.getAttribute("type");
 		String class2 = span.getAttribute("class");
-		span.click();
 		
+		span.click();
 		wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(input, "type", type2)));
+		
+		// Record the returned state of the password display.
 		String type3 = input.getAttribute("type");
 		String class3 = span.getAttribute("class");
 		

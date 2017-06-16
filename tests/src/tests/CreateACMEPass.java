@@ -56,25 +56,26 @@ public class CreateACMEPass {
 		By navLocator = By.xpath("/html/body/div[3]/div/div/div[3]/jhi-item-count/div");
 		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[href='#/acme-pass/new']")));
 		
+		// Record the number of items existing as reported by the interface.
 		String navMessage = driver.findElement(navLocator).getText(); // showing x - y of z items
 		String[] parts = navMessage.split(" ");
 		int countBefore = Integer.parseInt(parts[5]);
 		
-		// create test entry
+		// Create a test entry.
 		driver.findElement(By.cssSelector("button[href='#/acme-pass/new']")).click();
 		driver.findElement(By.cssSelector("input#field_site")).sendKeys("test site");
 		driver.findElement(By.cssSelector("input#field_login")).sendKeys("test login");
 		driver.findElement(By.cssSelector("input#field_password")).sendKeys("test pass");
 		driver.findElement(By.cssSelector("button[type=submit]")).click();
-		
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//pre[1]")));
+		
 		String createMessage = driver.findElement(By.xpath("//pre[1]")).getText();
 		
 		navMessage = driver.findElement(navLocator).getText();
 		parts = navMessage.split(" ");
 		int countAfter = Integer.parseInt(parts[5]);
 		
-		// order by id descending so the newly created password is at the top.
+		// Order by id descending so the newly created password is at the top.
 		driver.findElement(By.xpath("//th[@jh-sort-by='id']")).click();
 		wait.until(ExpectedConditions.attributeContains(By.xpath("//th[@jh-sort-by='id']/span[2]"), "class", "glyphicon-sort-by-attributes"));
 		

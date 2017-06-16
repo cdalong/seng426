@@ -105,7 +105,7 @@ public class GeneratePassword {
 	    wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(passwordField, "value", generated5)));
 	    String generated6 = passwordField.getAttribute("value");
 
-	    // Confirm the generated password.
+	    // Accept the generated password.
 	    driver.findElement(By.cssSelector("button[type='submit']")).click();
 	    String accepted = driver.findElement(By.id("field_password")).getAttribute("value");
 	    

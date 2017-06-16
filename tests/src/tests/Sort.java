@@ -1,389 +1,295 @@
 package tests;
 
+import static org.junit.Assert.*;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import util.ServerConfig;
 import util.WebDriverFactory;
-import junit.framework.TestCase;
 
-public class Sort extends TestCase{
+public class Sort {
 	
-	private WebDriver driver;
-	
-	@Before
-	public void setUp() throws Exception{
+	private static WebDriver driver;
+	private static WebDriverWait wait;
+	private static String baseUrl = "http://localhost:8080";
+
+	@BeforeClass
+	public static void setUpOnce() throws Exception {
+		if (System.getProperty("url") != null)
+			baseUrl = System.getProperty("url");
 		
-		System.setProperty("webdriver.chrome.driver", "C:/Users/Crims/Documents/chromedriver_win32/chromedriver.exe");
+		ServerConfig.Setup(baseUrl, 5);
 
 		driver = WebDriverFactory.Create();
-		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.SECONDS);
+		driver.manage().timeouts().setScriptTimeout(5, TimeUnit.SECONDS);
+		wait = new WebDriverWait(driver, 5);
 		
+		driver.get(baseUrl + "/#/");
+		driver.findElement(By.id("login")).click();
+		driver.findElement(By.id("username")).clear();
+		driver.findElement(By.id("username")).sendKeys("test@acme.com");
+		driver.findElement(By.id("password")).clear();
+		driver.findElement(By.id("password")).sendKeys("test");
+		driver.findElement(By.cssSelector("button.btn.btn-primary")).click();
+		wait.until(ExpectedConditions.elementToBeClickable(By.id("account-menu")));
 	}
 	
-	public void testLogin() throws Exception{
-		
-		this.driver.get("http://localhost:8080");
-		
-		WebElement login = driver.findElement(By.id("login"));
-		login.click();
-		
-		WebElement username = driver.findElement(By.id("username"));
-		
-		WebElement password = driver.findElement(By.id("password"));
-		
-		username.sendKeys("jo.thomas@acme.com");
-		
-		password.sendKeys("12345");
-		
-		WebElement submit = driver.findElement(By.id("login"));
-		
-		
-		submit.click();	
-		
+	@AfterClass
+	public static void tearDownOnce() throws Exception {
+		driver.quit();
 	}
-	
-	
-	
-	public void testID() throws Exception{
+
+	@Test	
+	public void testID() throws Exception {
 		
-		testLogin();
-		
-		Thread.sleep(2000);
-		
-		driver.get("http://localhost:8080/index.html#/acme-pass");
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));
 		
 		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[1]"));
 		
 		int[] array = new int[data.size()];
+		for (int i = 0; i < data.size(); i++)
+			array[i] = Integer.parseInt(data.get(i).getText());
 		
-		for (int i = 0; i < data.size(); i++){
-		System.out.println(data.get(i).getText());
-		array[i] = Integer.parseInt(data.get(i).getText());
-		
-		}
-		
-		int[] sortedArray = new int[data.size()];
-		
-		sortedArray = array;
-		
+		int[] sortedArray = array.clone();
 		Arrays.sort(sortedArray);
 		
-		assertTrue(sortedArray.equals(array));
-			
+		assertTrue(Arrays.equals(array, sortedArray));
 	}
 	
-	public void testIDRev() throws Exception{
+	@Test
+	public void testIDRev() throws Exception {
 		
-		testLogin();
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));
 		
-		Thread.sleep(2000);
-		
-		driver.get("http://localhost:8080/index.html#/acme-pass?sort=id,desc");
-		
+		String xpath = "//th[@jh-sort-by='id']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes"));
+
 		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[1]"));
 		
 		int[] array = new int[data.size()];
+		for (int i = 0; i < data.size(); i++)
+			array[i] = Integer.parseInt(data.get(i).getText());
 		
-		for (int i = 0; i < data.size(); i++){
-		System.out.println(data.get(i).getText());
-		array[i] = Integer.parseInt(data.get(i).getText());
-		
-		}
-		
-		int[] sortedArray = new int[data.size()];
-		
-		sortedArray = array;
-		
+		int[] sortedArray = array.clone();
 		Arrays.sort(sortedArray);
-		
 		ArrayUtils.reverse(sortedArray);
 		
-		assertTrue(sortedArray.equals(array));
-			
+		assertTrue(Arrays.equals(array, sortedArray));
 	}
 	
-public void testSite() throws Exception{
+	@Test
+	public void testSite() throws Exception {
 		
-		testLogin();
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));
+			
+		String xpath = "//th[@jh-sort-by='site']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
 		
-		Thread.sleep(2000);
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[2]"));
 		
-		driver.get("http://localhost:8080/index.html#/acme-pass?sort=site,asc");
+		String[] array = new String[data.size()];
+		for (int i = 0; i < data.size(); i++)
+			array[i] = data.get(i).getText();
+		
+        String[] sortedArray = array.clone();
+		Arrays.sort(sortedArray);
+		
+		assertTrue(Arrays.equals(array, sortedArray));
+	}
+	
+	@Test
+	public void testSiteRev() throws Exception{
+		
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));
+		
+		String xpath = "//th[@jh-sort-by='site']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes"));
 		
 		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[2]"));
 		
 		String[] array = new String[data.size()];
 		
-		for (int i = 0; i < data.size(); i++){
-		System.out.println(data.get(i).getText());
+		for (int i = 0; i < data.size(); i++)
 		array[i] = data.get(i).getText();
 		
-		}
+	    String[] sortedArray = array.clone();
+		Arrays.sort(sortedArray);
+		ArrayUtils.reverse(sortedArray);
 		
-        String[] sortedArray = new String[data.size()];
+		assertTrue(Arrays.equals(array, sortedArray));
+	}
+	
+	@Test
+	public void testLoginSort() throws Exception{
 		
-		sortedArray = array;
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));
+			
+		String xpath = "//th[@jh-sort-by='login']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
 		
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[3]"));
+		
+		String[] array = new String[data.size()];
+		
+		for (int i = 0; i < data.size(); i++)
+			array[i] = data.get(i).getText();
+		
+	    String[] sortedArray = array.clone();
+		Arrays.sort(sortedArray);
+
+		assertTrue(Arrays.equals(array, sortedArray));
+	}
+	
+	@Test
+	public void testLoginSortRev() throws Exception{
+		
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));	
+		
+		String xpath = "//th[@jh-sort-by='login']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes"));
+		
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[3]"));
+		
+		String[] array = new String[data.size()];
+		for (int i = 0; i < data.size(); i++)
+			array[i] = data.get(i).getText();
+		
+	    String[] sortedArray = array.clone();
+		Arrays.sort(sortedArray);
+		ArrayUtils.reverse(sortedArray);
+		
+		assertTrue(Arrays.equals(array, sortedArray));
+	}
+	
+	@Test
+	public void testCreateDate() throws Exception{
+
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));	
+		
+		String xpath = "//th[@jh-sort-by='createdDate']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
+		
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[5]"));
+		
+		DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
+		Date[] arrayOfDates = new Date[data.size()];
+		for (int i = 0; i < data.size(); i++)
+			arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
+		
+	    Date[] sortedArray = arrayOfDates.clone();
 		Arrays.sort(sortedArray);
 		
-		//ArrayUtils.reverse(sortedArray);
+		assertTrue(Arrays.equals(arrayOfDates, sortedArray));
+	}
+	
+	@Test
+	public void testCreateDateRev() throws Exception{
 		
-		assertTrue(sortedArray.equals(array));
-
-			
-	}
-public void testSiteRev() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=site,desc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[2]"));
-	
-	String[] array = new String[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	array[i] = data.get(i).getText();
-	
-	}
-	
-    String[] sortedArray = new String[data.size()];
-	
-	sortedArray = array;
-	
-	Arrays.sort(sortedArray);
-	
-	ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(array));
-
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));	
 		
-}
-
-public void testLoginSort() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=login,asc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[3]"));
-	
-	String[] array = new String[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	array[i] = data.get(i).getText();
-	
-	}
-	
-    String[] sortedArray = new String[data.size()];
-	
-	sortedArray = array;
-	
-	Arrays.sort(sortedArray);
-	
-	//ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(array));
-
+		String xpath = "//th[@jh-sort-by='createdDate']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes"));
 		
-}
-public void testLoginSortRev() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=login,desc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[3]"));
-	
-	String[] array = new String[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	array[i] = data.get(i).getText();
-	
-	}
-	
-    String[] sortedArray = new String[data.size()];
-	
-	sortedArray = array;
-	
-	Arrays.sort(sortedArray);
-	
-	ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(array));
-
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[5]"));
 		
-}
-public void testCreateDate() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
-	
-	System.out.println((Date)formatter.parse("Jun 14, 2017 5:06:15 PM"));
-	
-	
-
-	
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=createdDate,asc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[5]"));
-	
-	Date[] arrayOfDates = new Date[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
-	
-	}
-	
-    Date[] sortedArray = new Date[data.size()];
-	
-	sortedArray = arrayOfDates;
-	
-	Arrays.sort(sortedArray);
-	
-	//ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(arrayOfDates));
-
+		DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
+		Date[] arrayOfDates = new Date[data.size()];
+		for (int i = 0; i < data.size(); i++)
+			arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
 		
-}
-public void testCreateDateRev() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
-	
-	System.out.println((Date)formatter.parse("Jun 14, 2017 5:06:15 PM"));
-	
-	
-
-	
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=createdDate,desc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[5]"));
-	
-	Date[] arrayOfDates = new Date[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
-	
-	}
-	
-    Date[] sortedArray = new Date[data.size()];
-	
-	sortedArray = arrayOfDates;
-	
-	Arrays.sort(sortedArray);
-	
-	ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(arrayOfDates));
-
+	    Date[] sortedArray = arrayOfDates.clone();
+		Arrays.sort(sortedArray);
+		ArrayUtils.reverse(sortedArray);
 		
-}
-public void testModifiedDate() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=lastModifiedDate,asc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[6]"));
-	
-	Date[] arrayOfDates = new Date[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
-	
+		assertTrue(Arrays.equals(arrayOfDates, sortedArray));
 	}
 	
-    Date[] sortedArray = new Date[data.size()];
-	
-	sortedArray = arrayOfDates;
-	
-	Arrays.sort(sortedArray);
-	
-	//ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(arrayOfDates));
-
+	@Test
+	public void testModifiedDate() throws Exception{
 		
-}
-
-public void testModifiedDateRev() throws Exception{
-	
-	testLogin();
-	
-	Thread.sleep(2000);
-	
-	DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
-	
-	driver.get("http://localhost:8080/index.html#/acme-pass?sort=lastModifiedDate,desc");
-	
-	List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[6]"));
-	
-	Date[] arrayOfDates = new Date[data.size()];
-	
-	for (int i = 0; i < data.size(); i++){
-	System.out.println(data.get(i).getText());
-	arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
-	
-	}
-	
-    Date[] sortedArray = new Date[data.size()];
-	
-	sortedArray = arrayOfDates;
-	
-	Arrays.sort(sortedArray);
-	
-	ArrayUtils.reverse(sortedArray);
-	
-	assertTrue(sortedArray.equals(arrayOfDates));
-
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));	
 		
-}
-	
-	@After
-	public void tearDown() throws Exception {
-		this.driver.quit();
+		String xpath = "//th[@jh-sort-by='lastModifiedDate']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
+		
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[6]"));
+		
+		DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
+		Date[] arrayOfDates = new Date[data.size()];
+		
+		for (int i = 0; i < data.size(); i++)
+			arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
+		
+	    Date[] sortedArray = arrayOfDates.clone();
+		Arrays.sort(sortedArray);
+		
+		assertTrue(Arrays.equals(arrayOfDates, sortedArray));
 	}
-	
+
+	@Test
+	public void testModifiedDateRev() throws Exception{
+		
+		driver.get(baseUrl + "/#/acme-pass");
+		wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("div.table-responsive")));	
+		
+		String xpath = "//th[@jh-sort-by='lastModifiedDate']";
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes-alt"));
+		driver.findElement(By.xpath(xpath)).click();
+		wait.until(ExpectedConditions.attributeContains(By.xpath(xpath + "/span[2]"), "class", "glyphicon-sort-by-attributes"));
+		
+		List<WebElement> data = driver.findElements(By.xpath("/html/body/div[3]/div/div/div[2]/table/tbody/tr/td[6]"));
+		
+		DateFormat formatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss a");
+		Date[] arrayOfDates = new Date[data.size()];
+		
+		for (int i = 0; i < data.size(); i++)
+			arrayOfDates[i] = (Date)formatter.parse(data.get(i).getText());
+		
+	    Date[] sortedArray = arrayOfDates.clone();
+		Arrays.sort(sortedArray);
+		ArrayUtils.reverse(sortedArray);
+		
+		assertTrue(Arrays.equals(arrayOfDates, sortedArray));
+	}
 }

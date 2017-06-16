@@ -61,8 +61,8 @@ public class EditPassword {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type=submit]")));
 
         String newSite = siteBefore.length() < 20 ? siteBefore + "0" : siteBefore.substring(0, 19);
-        String newLogin = siteBefore.length() < 20 ? loginBefore + "0" : loginBefore.substring(0, 19);
-        String newPassword = siteBefore.length() < 20 ? passwordBefore + "0" : passwordBefore.substring(0, 19);
+        String newLogin = loginBefore.length() < 20 ? loginBefore + "0" : loginBefore.substring(0, 19);
+        String newPassword = passwordBefore.length() < 20 ? passwordBefore + "0" : passwordBefore.substring(0, 19);
 
         // Input new password data and confirm the edit.
         driver.findElement(By.id("field_site")).clear();
@@ -134,7 +134,7 @@ public class EditPassword {
 
     @After
     public void finish() {
-        // this.driver.close();
+        this.driver.close();
     }
 
 }

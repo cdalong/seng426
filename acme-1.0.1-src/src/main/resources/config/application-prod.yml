@@ -82,6 +82,8 @@ jhipster:
         rememberMe:
             # security key (this key should be unique for your application, and kept secret)
             key: 69d32be1516cae568e43027897a64d55898dd3b4
+        encryption:
+            key: 219e48d750491d8c1e3728afccfd9ec7
     mail: # specific JHipster mail property, for standard properties see MailProperties
         from: noreply@acme.com
         baseUrl: http://www.acme.ca # Modify according to your server's URL

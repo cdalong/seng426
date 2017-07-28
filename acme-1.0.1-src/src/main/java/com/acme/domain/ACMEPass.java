@@ -29,7 +29,7 @@ public class ACMEPass extends AbstractDatedEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Key k = new SecretKeySpec(new byte[]{(byte) 0x21, (byte) 0x9e, (byte) 0x48, (byte) 0xd7,
+	private static Key k = new SecretKeySpec(new byte[]{(byte) 0x21, (byte) 0x9e, (byte) 0x48, (byte) 0xd7,
 		(byte) 0x50, (byte) 0x49, (byte) 0x1d, (byte) 0x8c, (byte) 0x1e, (byte) 0x37,
 		(byte) 0x28, (byte) 0xaf, (byte) 0xcc, (byte) 0xfd, (byte) 0x9e, (byte) 0xc7}, "AES");
 
@@ -161,5 +161,13 @@ public class ACMEPass extends AbstractDatedEntity implements Serializable {
 			+ ", createdDate='" + createdDate + "'"
 			+ ", lastModifiedDate='" + lastModifiedDate + "'"
 			+ '}';
+	}
+	
+	public static boolean LoadEncryptionKey(String keyString)
+	{
+		try { ACMEPass.k = new SecretKeySpec(DatatypeConverter.parseHexBinary(keyString), "AES"); }
+		catch (IllegalArgumentException ex) { return false; }
+		
+		return true;
 	}
 }

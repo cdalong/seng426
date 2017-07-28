@@ -171,9 +171,14 @@ public class JHipsterProperties {
 	public static class Security {
 
 		private final RememberMe rememberMe = new RememberMe();
+		private final Encryption encryption = new Encryption();
 
 		public RememberMe getRememberMe() {
 			return rememberMe;
+		}
+		
+		public Encryption getEncryption() {
+			return encryption;
 		}
 
 		public static class RememberMe {
@@ -185,6 +190,20 @@ public class JHipsterProperties {
 				return key;
 			}
 
+			public void setKey(String key) {
+				this.key = key;
+			}
+		}
+		
+		public static class Encryption {
+			
+			@NotNull
+			private String key;
+			
+			public String getKey() {
+				return key;
+			}
+			
 			public void setKey(String key) {
 				this.key = key;
 			}

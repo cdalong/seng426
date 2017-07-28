@@ -3,6 +3,7 @@ package com.acme;
 import com.acme.config.Constants;
 import com.acme.config.DefaultProfileUtil;
 import com.acme.config.JHipsterProperties;
+import com.acme.domain.ACMEPass;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,10 @@ public class AcmeApp {
 
 	@Inject
 	private Environment env;
-
+	
+	@Inject
+	private JHipsterProperties jHipsterProperties;
+	
 	/**
 	 * Initializes acme.
 	 * <p>
@@ -50,6 +54,9 @@ public class AcmeApp {
 		if (activeProfiles.contains(Constants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(Constants.SPRING_PROFILE_CLOUD)) {
 			log.error("You have misconfigured your application! It should not"
 				+ "run with both the 'dev' and 'cloud' profiles at the same time.");
+		}
+		if (!ACMEPass.LoadEncryptionKey(jHipsterProperties.getSecurity().getEncryption().getKey())) {
+			log.warn("ACMEPass encryption key has not been configured. Using default encryption key.");
 		}
 	}
 

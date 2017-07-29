@@ -42,7 +42,7 @@ public class ACMEPassService {
 		if (dto.getId() != null) {
 			acmePass = acmePassRepository.findOne(dto.getId());
 
-			if (acmePass == null) {
+			if (acmePass == null || !acmePass.getUser().equals(userService.getCurrentUser())) {
 				return null;
 			}
 		} else {
@@ -78,7 +78,12 @@ public class ACMEPassService {
 	@Transactional(readOnly = true)
 	public ACMEPassDTO findOne(Long id) {
 		log.debug("Request to get ACMEPass : {}", id);
-		return new ACMEPassDTO(acmePassRepository.findOne(id));
+		
+		ACMEPass acmePass = acmePassRepository.findOne(id);
+		if (acmePass == null || !acmePass.getUser().equals(userService.getCurrentUser()))
+			return null;
+			
+		return new ACMEPassDTO(acmePass);
 	}
 
 	/**
